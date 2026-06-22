@@ -3,41 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Orbit Remote — удалённое управление Android-устройствами</title>
-  <meta name="description" content="Orbit Remote — собственный аналог AnyDesk для управления вашими Android-устройствами через интернет. Захват экрана в реальном времени, удалённое управление, передача файлов, сквозное шифрование." />
+  <title>Orbit Remote — удалённое управление Android из любой точки</title>
+  <meta name="description" content="Orbit Remote — собственный аналог AnyDesk. Управляй Android-телефоном с компьютера через интернет: экран в реальном времени, жесты, файлы, сквозное шифрование." />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="preconnect" href="/" />
   <link rel="stylesheet" href="/styles.css" />
-  <script>
-    // Theme bootstrap before paint to avoid a flash of the wrong theme.
-    (function () {
-      try {
-        var saved = localStorage.getItem("orbit-theme");
-        if (saved === "light" || saved === "dark") {
-          document.documentElement.setAttribute("data-theme", saved);
-        } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
-          document.documentElement.setAttribute("data-theme", "light");
-        }
-      } catch (e) {}
-    })();
-  </script>
 </head>
 <body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-orb orb-1" aria-hidden="true"></div>
+  <div class="bg-orb orb-2" aria-hidden="true"></div>
+  <div class="bg-orb orb-3" aria-hidden="true"></div>
+
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="/">
         <span class="brand-mark" aria-hidden="true"></span>
-        <span class="brand-name">Orbit&nbsp;Remote</span>
+        <span class="brand-name">ORBIT<span class="brand-dim">REMOTE</span></span>
       </a>
-      <nav class="nav" aria-label="Основная навигация">
+      <nav class="nav" aria-label="Навигация">
         <a href="#features">Возможности</a>
         <a href="#download">Скачать</a>
         <a href="#requirements">Требования</a>
         <a href="#selfhost">Свой сервер</a>
       </nav>
-      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Переключить тему">
-        <span class="theme-toggle-icon" aria-hidden="true"></span>
-      </button>
+      <a class="btn btn-neon btn-sm" href="#download">Скачать</a>
     </div>
   </header>
 
@@ -45,34 +34,67 @@
     <section class="hero">
       <div class="container hero-inner">
         <div class="hero-copy">
-          <p class="eyebrow">Self-hosted · WebRTC · сквозное шифрование</p>
-          <h1>Управляйте своими Android-устройствами<br />из любой точки мира</h1>
+          <p class="eyebrow"><span class="pulse-dot"></span> SELF-HOSTED · WEBRTC · AES‑256</p>
+          <h1>Управляй <span class="glow-c">Android</span><br />с компьютера<br /><span class="glow-m">из любой точки мира</span></h1>
           <p class="lead">
-            Orbit Remote — это ваш собственный аналог AnyDesk. Захват экрана в реальном
-            времени, полноценное управление жестами, передача файлов и буфер обмена —
-            всё через зашифрованное P2P-соединение и ваш собственный сервер.
+            Orbit Remote — твой собственный AnyDesk. Экран телефона в реальном времени,
+            управление мышью и клавиатурой, передача файлов и буфер обмена — напрямую
+            между устройствами по зашифрованному каналу.
           </p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="#download">Скачать приложение</a>
+            <a class="btn btn-neon" href="#download"><span>Скачать приложение</span></a>
             <a class="btn btn-ghost" href="#selfhost">Развернуть сервер</a>
           </div>
           <dl class="hero-stats">
-            <div><dt>&lt;300&nbsp;мс</dt><dd>задержка</dd></div>
-            <div><dt>30&nbsp;FPS</dt><dd>Full&nbsp;HD, H.264</dd></div>
-            <div><dt>AES‑256</dt><dd>шифрование</dd></div>
+            <div><dt>&lt;300<span>мс</span></dt><dd>задержка</dd></div>
+            <div><dt>30<span>FPS</span></dt><dd>Full HD · H.264</dd></div>
+            <div><dt>AES<span>256</span></dt><dd>шифрование</dd></div>
           </dl>
         </div>
+
         <div class="hero-visual" aria-hidden="true">
-          <div class="phone">
-            <div class="phone-notch"></div>
-            <div class="phone-screen">
-              <div class="phone-bar"></div>
-              <div class="phone-grid">
-                <span></span><span></span><span></span>
-                <span></span><span></span><span></span>
-                <span></span><span></span><span></span>
+          <div class="rig">
+            <!-- Монитор ПК -->
+            <div class="monitor">
+              <div class="monitor-screen">
+                <div class="m-topbar"><span></span><span></span><span></span></div>
+                <div class="m-body">
+                  <div class="m-sidebar">
+                    <div class="m-line"></div><div class="m-line short"></div>
+                    <div class="m-line"></div><div class="m-line short"></div>
+                  </div>
+                  <div class="m-stage">
+                    <div class="m-phone">
+                      <div class="m-grid"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="m-cursor"></div>
               </div>
-              <div class="phone-cursor"></div>
+              <div class="monitor-neck"></div>
+              <div class="monitor-foot"></div>
+            </div>
+
+            <!-- Луч передачи -->
+            <div class="beam">
+              <span class="beam-dot d1"></span>
+              <span class="beam-dot d2"></span>
+              <span class="beam-dot d3"></span>
+              <span class="beam-label">WebRTC</span>
+            </div>
+
+            <!-- Телефон -->
+            <div class="phone">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+                <div class="phone-bar"></div>
+                <div class="phone-grid">
+                  <span></span><span></span><span></span>
+                  <span></span><span></span><span></span>
+                  <span></span><span></span><span></span>
+                </div>
+                <div class="phone-cursor"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -81,50 +103,38 @@
 
     <section id="features" class="section">
       <div class="container">
-        <h2 class="section-title">Возможности</h2>
-        <p class="section-sub">Полный набор функций удалённого доступа для личного использования.</p>
+        <p class="kicker">// ВОЗМОЖНОСТИ</p>
+        <h2 class="section-title">Всё для удалённого доступа</h2>
         <div class="feature-grid">
           <article class="card">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-            </div>
+            <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
             <h3>Захват экрана</h3>
-            <p>MediaProjection + аппаратный кодировщик H.264. До Full HD, 30&nbsp;FPS, адаптивное качество в зависимости от скорости сети.</p>
+            <p>MediaProjection + аппаратный H.264. До Full HD, 30&nbsp;FPS, адаптивное качество под скорость сети.</p>
           </article>
           <article class="card">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M12 11V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M15 11V6.5a1.5 1.5 0 0 1 3 0V14a6 6 0 0 1-6 6h-1.5a5 5 0 0 1-4-2l-3-4a1.6 1.6 0 0 1 2.5-2L9 13"/></svg>
-            </div>
+            <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M12 11V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M15 11V6.5a1.5 1.5 0 0 1 3 0V14a6 6 0 0 1-6 6h-1.5a5 5 0 0 1-4-2l-3-4a1.6 1.6 0 0 1 2.5-2L9 13"/></svg></div>
             <h3>Удалённое управление</h3>
-            <p>Тап, двойной тап, удержание, свайпы, прокрутка, ввод текста, кнопки «Назад», «Домой» и список последних приложений.</p>
+            <p>Тап, двойной тап, удержание, свайпы, прокрутка, ввод текста, «Назад», «Домой» и список приложений.</p>
           </article>
           <article class="card">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9z"/><path d="M13 3v6h6M9 13h6M9 17h6"/></svg>
-            </div>
+            <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9z"/><path d="M13 3v6h6M9 13h6M9 17h6"/></svg></div>
             <h3>Передача файлов</h3>
             <p>В обе стороны, файлы более 2&nbsp;ГБ, возобновление передачи после обрыва соединения.</p>
           </article>
           <article class="card">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 15v2"/></svg>
-            </div>
+            <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 15v2"/></svg></div>
             <h3>Безопасность</h3>
-            <p>TLS/DTLS, AES‑256, авторизация по коду подключения, подтверждение первого входа и белый список доверенных устройств.</p>
+            <p>TLS/DTLS, AES‑256, код подключения, подтверждение первого входа и белый список устройств.</p>
           </article>
           <article class="card">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 5.7 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.7-3.8-9S9.5 5.5 12 3z"/></svg>
-            </div>
+            <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 5.7 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.7-3.8-9S9.5 5.5 12 3z"/></svg></div>
             <h3>Сеть WebRTC</h3>
-            <p>STUN/TURN, автоматический выбор оптимального маршрута и восстановление соединения без разрыва сессии.</p>
+            <p>STUN/TURN, авто-выбор маршрута и восстановление соединения без разрыва сессии.</p>
           </article>
           <article class="card">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="12" height="13" rx="2"/><path d="M9 21h7a2 2 0 0 0 2-2V9"/><rect x="15" y="9" width="6" height="11" rx="2" fill="none"/></svg>
-            </div>
+            <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="12" height="13" rx="2"/><path d="M9 21h7a2 2 0 0 0 2-2V9"/><rect x="15" y="9" width="6" height="11" rx="2" fill="none"/></svg></div>
             <h3>Мультисессии</h3>
-            <p>Десктоп-клиент для Windows: тёмная и светлая темы, избранные устройства и до 20 одновременных подключений.</p>
+            <p>Десктоп-клиент: тёмная/светлая тема, избранные устройства и до 20 подключений одновременно.</p>
           </article>
         </div>
       </div>
@@ -132,64 +142,62 @@
 
     <section id="download" class="section section-alt">
       <div class="container">
-        <h2 class="section-title">Скачать</h2>
-        <p class="section-sub">Выберите платформу. Сборки публикуются автоматически из исходного кода.</p>
-        <div class="download-grid" id="download-grid">
-          <article class="download-card" data-platform="windows">
+        <p class="kicker">// СКАЧАТЬ</p>
+        <h2 class="section-title">Забирай и подключайся</h2>
+        <div class="download-grid">
+          <article class="download-card win">
             <div class="download-os" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.2 10.5 4v7.3H3zM11.5 3.85 21 2.5V11.3h-9.5zM3 12.7h7.5V20L3 18.8zM11.5 12.7H21v8.8l-9.5-1.35z"/></svg>
             </div>
             <h3>Windows</h3>
             <p class="download-meta">Windows 10/11 · 64‑бит · установщик</p>
-            <a class="btn btn-primary" href="https://github.com/simba-stack/orbit-remote-desktop/releases/latest/download/OrbitRemote-Setup.exe">Скачать для Windows</a>
+            <a class="btn btn-neon" href="https://github.com/simba-stack/orbit-remote-desktop/releases/latest/download/OrbitRemote-Setup.exe"><span>Скачать для Windows</span></a>
             <p class="download-note">OrbitRemote-Setup.exe</p>
           </article>
-          <article class="download-card" data-platform="android">
+          <article class="download-card droid">
             <div class="download-os" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 9h12v8a2 2 0 0 1-2 2h-1v3h-2v-3h-2v3H9v-3H8a2 2 0 0 1-2-2zM4 9.5A1.5 1.5 0 0 1 5.5 11v4a1.5 1.5 0 0 1-3 0v-4A1.5 1.5 0 0 1 4 9.5zm16 0A1.5 1.5 0 0 1 21.5 11v4a1.5 1.5 0 0 1-3 0v-4A1.5 1.5 0 0 1 20 9.5zM7.2 8c.3-1.9 1.5-3.5 3.2-4.4l-1-1.6a.3.3 0 0 1 .5-.3l1.05 1.7a6.6 6.6 0 0 1 4.1 0l1.05-1.7a.3.3 0 0 1 .5.3l-1 1.6C18.3 4.5 19.5 6.1 19.8 8zm2.55-1.6a.85.85 0 1 0 0-1.7.85.85 0 0 0 0 1.7zm4.5 0a.85.85 0 1 0 0-1.7.85.85 0 0 0 0 1.7z"/></svg>
             </div>
             <h3>Android</h3>
             <p class="download-meta">Android 8.0+ · APK</p>
-            <a class="btn btn-primary" href="https://github.com/simba-stack/orbit-remote-android/releases/latest/download/orbit-remote.apk">Скачать APK</a>
+            <a class="btn btn-neon" href="https://github.com/simba-stack/orbit-remote-android/releases/latest/download/orbit-remote.apk"><span>Скачать APK</span></a>
             <p class="download-note">orbit-remote.apk</p>
           </article>
         </div>
         <p class="download-disclaimer">
-          APK устанавливается из неизвестных источников — разрешите установку в настройках Android.
-          Десктоп-клиент подписывается вашим сертификатом при сборке.
+          APK ставится из неизвестных источников — разрешите установку в настройках Android.
+          Дай агенту разрешения «Захват экрана» и «Спец. возможности».
         </p>
       </div>
     </section>
 
     <section id="requirements" class="section">
       <div class="container">
-        <h2 class="section-title">Системные требования</h2>
+        <p class="kicker">// ТРЕБОВАНИЯ</p>
+        <h2 class="section-title">Что нужно</h2>
         <div class="req-grid">
           <div class="req-col">
-            <h3>Android-агент</h3>
+            <h3>Android‑агент</h3>
             <ul>
               <li>Android 8.0 (API 26) и выше</li>
-              <li>Поддержка MediaProjection и Accessibility Service</li>
-              <li>Совместимость: Samsung, Xiaomi, Redmi, Poco, Oppo, Vivo, OnePlus, Realme, Google&nbsp;Pixel</li>
-              <li>Разрешения на захват экрана и спец. возможности</li>
+              <li>MediaProjection и Accessibility</li>
+              <li>Samsung, Xiaomi, Redmi, Poco, Oppo, Vivo, OnePlus, Realme, Pixel</li>
             </ul>
           </div>
           <div class="req-col">
-            <h3>Windows-клиент</h3>
+            <h3>Windows‑клиент</h3>
             <ul>
               <li>Windows 10/11 (64‑бит)</li>
               <li>4&nbsp;ГБ ОЗУ и выше</li>
-              <li>Подключение к интернету</li>
-              <li>Поддержка нескольких мониторов и полноэкранного режима</li>
+              <li>Несколько мониторов и полный экран</li>
             </ul>
           </div>
           <div class="req-col">
             <h3>Сервер</h3>
             <ul>
-              <li>VPS на Ubuntu 22.04 или Debian 12</li>
-              <li>Docker и docker‑compose</li>
+              <li>Сигналинг на Railway / VPS</li>
               <li>coturn (STUN/TURN)</li>
-              <li>Открытые порты сигналинга и TURN</li>
+              <li>Docker · Ubuntu 22.04 / Debian 12</li>
             </ul>
           </div>
         </div>
@@ -199,39 +207,34 @@
     <section id="selfhost" class="section section-alt">
       <div class="container selfhost-inner">
         <div>
-          <h2 class="section-title">Свой сервер</h2>
-          <p class="section-sub">
-            Orbit Remote работает на вашей инфраструктуре. Сигнальный сервер и TURN
-            разворачиваются одной командой через docker‑compose. Никакие медиаданные
-            не проходят через сторонние сервисы — соединение устанавливается напрямую
-            между устройствами.
+          <p class="kicker">// СВОЙ СЕРВЕР</p>
+          <h2 class="section-title">Полный контроль</h2>
+          <p class="lead">
+            Orbit Remote работает на твоей инфраструктуре. Медиапоток идёт напрямую между
+            устройствами — через сервер проходят только служебные сообщения.
           </p>
           <ul class="check-list">
             <li>Регистрация устройств и хранение ID</li>
             <li>WebRTC‑сигналинг по WebSocket</li>
-            <li>Готовые конфигурации STUN/TURN (coturn)</li>
-            <li>Логирование подключений: время, IP, длительность сессии</li>
+            <li>STUN/TURN (coturn) для любых сетей</li>
+            <li>Логи: время, IP, длительность сессии</li>
           </ul>
         </div>
-        <pre class="code-block"><code># Развёртывание на VPS
-git clone &lt;your-repo&gt;
-cd orbit-remote/server
-cp .env.example .env   # укажите домен и секреты
-docker compose up -d
+        <pre class="code-block"><code><span class="c-cmt"># развёртывание</span>
+<span class="c-fn">git</span> clone &lt;repo&gt;
+<span class="c-fn">cd</span> orbit-remote/server
+<span class="c-fn">docker</span> compose up -d
 
-# Проверка
-curl https://your-domain/health</code></pre>
+<span class="c-cmt"># проверка</span>
+<span class="c-fn">curl</span> https://server/health</code></pre>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <div class="footer-brand">
-        <span class="brand-mark" aria-hidden="true"></span>
-        <span>Orbit Remote</span>
-      </div>
-      <p class="footer-note">Self-hosted удалённое управление Android. Для личного использования.</p>
+      <div class="footer-brand"><span class="brand-mark"></span><span>ORBIT REMOTE</span></div>
+      <p class="footer-note">Self-hosted удалённое управление Android.</p>
       <p class="footer-copy">© <span id="year"></span> Orbit Remote</p>
     </div>
   </footer>
