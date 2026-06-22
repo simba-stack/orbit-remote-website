@@ -116,18 +116,34 @@ const RELEASE_ASSETS = {
 app.get("/dl/:platform", async (req, res) => {
   const asset = RELEASE_ASSETS[req.params.platform];
   if (!asset) return res.status(404).json({ error: "unknown platform" });
+
+  // Abort a hung GitHub fetch instead of pinning a socket indefinitely.
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30_000);
   try {
-    const upstream = await fetch(asset.url, { redirect: "follow" });
+    const upstream = await fetch(asset.url, { redirect: "follow", signal: controller.signal });
     if (!upstream.ok || !upstream.body) {
+      clearTimeout(timeout);
       return res.status(502).json({ error: `upstream ${upstream.status}` });
     }
     res.setHeader("Content-Type", asset.type);
     res.setHeader("Content-Disposition", `attachment; filename="${asset.filename}"`);
     const len = upstream.headers.get("content-length");
     if (len) res.setHeader("Content-Length", len);
-    Readable.fromWeb(upstream.body).pipe(res);
+
+    const stream = Readable.fromWeb(upstream.body);
+    // If the upstream connection drops mid-download, fail cleanly instead of
+    // throwing an unhandled 'error' on the pipe (which can crash the process).
+    stream.on("error", () => {
+      if (!res.headersSent) res.status(502).end();
+      else res.destroy();
+    });
+    res.on("close", () => stream.destroy());
+    stream.once("end", () => clearTimeout(timeout));
+    stream.pipe(res);
   } catch (e) {
-    res.status(502).json({ error: "download proxy failed" });
+    clearTimeout(timeout);
+    if (!res.headersSent) res.status(502).json({ error: "download proxy failed" });
   }
 });
 
