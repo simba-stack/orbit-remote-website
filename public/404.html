@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 — Orbit Remote</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script>
+    (function () {
+      try {
+        var s = localStorage.getItem("orbit-theme");
+        if (s === "light" || s === "dark") document.documentElement.setAttribute("data-theme", s);
+      } catch (e) {}
+    })();
+  </script>
+  <style>
+    .nf { min-height: 70vh; display: grid; place-items: center; text-align: center; }
+    .nf h1 { font-size: 5rem; margin: 0; letter-spacing: -0.04em; background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .nf p { color: var(--text-dim); margin: 8px 0 24px; }
+  </style>
+</head>
+<body>
+  <main class="container nf">
+    <div>
+      <h1>404</h1>
+      <p>Страница не найдена.</p>
+      <a class="btn btn-primary" href="/">На главную</a>
+    </div>
+  </main>
+</body>
+</html>
