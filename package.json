@@ -1,0 +1,21 @@
+{
+  "name": "orbit-remote-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Company website and download portal for Orbit Remote — self-hosted remote control for Android devices.",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "express": "^4.19.2",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0"
+  }
+}
