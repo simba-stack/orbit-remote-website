@@ -1,0 +1,20 @@
+{
+  "product": "Orbit Remote",
+  "updated": null,
+  "platforms": {
+    "windows": {
+      "version": null,
+      "file": "OrbitRemote-Setup.exe",
+      "size": null,
+      "sha256": null,
+      "minOs": "Windows 10 (64-bit)"
+    },
+    "android": {
+      "version": null,
+      "file": "orbit-remote-release.apk",
+      "size": null,
+      "sha256": null,
+      "minOs": "Android 8.0 (API 26)"
+    }
+  }
+}
