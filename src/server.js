@@ -4,6 +4,7 @@ import compression from "compression";
 import morgan from "morgan";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { Readable } from "node:stream";
 import {
   RELEASES_DIR,
   readManifest,
@@ -93,6 +94,41 @@ app.get("/download/:platform", (req, res) => {
 
   const filePath = path.join(RELEASES_DIR, path.basename(entry.file));
   res.download(filePath, path.basename(entry.file));
+});
+
+// Proxy download: stream the latest GitHub release asset through this server.
+// The phone reaches Railway fine, while GitHub's asset CDN
+// (release-assets.githubusercontent.com) is blocked by some ISPs — so we fetch it
+// server-side (cloud → GitHub is unrestricted) and pipe it to the client.
+const RELEASE_ASSETS = {
+  windows: {
+    url: "https://github.com/simba-stack/orbit-remote-desktop/releases/latest/download/OrbitRemote-Setup.exe",
+    filename: "OrbitRemote-Setup.exe",
+    type: "application/octet-stream",
+  },
+  android: {
+    url: "https://github.com/simba-stack/orbit-remote-android/releases/latest/download/orbit-remote.apk",
+    filename: "orbit-remote.apk",
+    type: "application/vnd.android.package-archive",
+  },
+};
+
+app.get("/dl/:platform", async (req, res) => {
+  const asset = RELEASE_ASSETS[req.params.platform];
+  if (!asset) return res.status(404).json({ error: "unknown platform" });
+  try {
+    const upstream = await fetch(asset.url, { redirect: "follow" });
+    if (!upstream.ok || !upstream.body) {
+      return res.status(502).json({ error: `upstream ${upstream.status}` });
+    }
+    res.setHeader("Content-Type", asset.type);
+    res.setHeader("Content-Disposition", `attachment; filename="${asset.filename}"`);
+    const len = upstream.headers.get("content-length");
+    if (len) res.setHeader("Content-Length", len);
+    Readable.fromWeb(upstream.body).pipe(res);
+  } catch (e) {
+    res.status(502).json({ error: "download proxy failed" });
+  }
 });
 
 // --- Static + pages ----------------------------------------------------
