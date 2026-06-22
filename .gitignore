@@ -1,0 +1,13 @@
+node_modules/
+npm-debug.log*
+.env
+.env.local
+.DS_Store
+Thumbs.db
+
+# Release binaries are not stored in git (use a volume or object storage)
+releases/*.exe
+releases/*.apk
+releases/*.msi
+releases/*.zip
+releases/*.AppImage
