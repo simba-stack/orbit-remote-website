@@ -6,7 +6,7 @@
   <title>Orbit Remote — удалённое управление Android из любой точки</title>
   <meta name="description" content="Orbit Remote — собственный аналог AnyDesk. Управляй Android-телефоном с компьютера через интернет: экран в реальном времени, жесты, файлы, сквозное шифрование." />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/styles.css?v=2" />
 </head>
 <body>
   <div class="bg-grid" aria-hidden="true"></div>
@@ -24,7 +24,7 @@
         <a href="#features">Возможности</a>
         <a href="#download">Скачать</a>
         <a href="#requirements">Требования</a>
-        <a href="#selfhost">Свой сервер</a>
+        <a href="#selfhost">Инфраструктура</a>
       </nav>
       <a class="btn btn-neon btn-sm" href="#download">Скачать</a>
     </div>
@@ -207,26 +207,26 @@
     <section id="selfhost" class="section section-alt">
       <div class="container selfhost-inner">
         <div>
-          <p class="kicker">// СВОЙ СЕРВЕР</p>
-          <h2 class="section-title">Полный контроль</h2>
+          <p class="kicker">// ИНФРАСТРУКТУРА</p>
+          <h2 class="section-title">Своя инфраструктура — уже работает</h2>
           <p class="lead">
-            Orbit Remote работает на твоей инфраструктуре. Медиапоток идёт напрямую между
-            устройствами — через сервер проходят только служебные сообщения.
+            Всё развёрнуто на собственных ресурсах и готово к работе. Медиапоток идёт
+            напрямую между устройствами — через сервер проходят только служебные
+            сообщения, всё под твоим контролем.
           </p>
           <ul class="check-list">
-            <li>Регистрация устройств и хранение ID</li>
-            <li>WebRTC‑сигналинг по WebSocket</li>
-            <li>STUN/TURN (coturn) для любых сетей</li>
-            <li>Логи: время, IP, длительность сессии</li>
+            <li>Сигналинг и регистрация устройств — на Railway</li>
+            <li>TURN/STUN (coturn) — на собственном VPS</li>
+            <li>Сквозное шифрование WebRTC (DTLS‑SRTP, AES‑256)</li>
+            <li>Логи подключений: время, IP, длительность</li>
           </ul>
         </div>
-        <pre class="code-block"><code><span class="c-cmt"># развёртывание</span>
-<span class="c-fn">git</span> clone &lt;repo&gt;
-<span class="c-fn">cd</span> orbit-remote/server
-<span class="c-fn">docker</span> compose up -d
+        <pre class="code-block"><code><span class="c-cmt"># статус системы</span>
+signaling    <span class="c-fn">● online</span>   Railway
+turn/coturn  <span class="c-fn">● online</span>   VPS · Frankfurt
+media        <span class="c-fn">● P2P</span>      DTLS-SRTP · AES-256
 
-<span class="c-cmt"># проверка</span>
-<span class="c-fn">curl</span> https://server/health</code></pre>
+<span class="c-cmt"># готово к подключению</span></code></pre>
       </div>
     </section>
   </main>
