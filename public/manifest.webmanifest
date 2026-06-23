@@ -1,0 +1,16 @@
+{
+  "name": "Orbit Remote — Мост буфера",
+  "short_name": "Orbit Мост",
+  "description": "Получай текст с компьютера на телефон и копируй его в буфер обмена.",
+  "start_url": "/chat",
+  "scope": "/chat",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#05060a",
+  "theme_color": "#05060a",
+  "lang": "ru",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

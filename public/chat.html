@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1" />
+  <meta name="theme-color" content="#05060a" />
+  <title>Orbit Remote — Мост буфера</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/favicon.svg" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    html, body { height: 100%; }
+    body { overflow: hidden; }
+    body.screen-code #chat-screen { display: none; }
+    body.screen-chat #code-screen { display: none; }
+
+    .code-screen {
+      min-height: 100vh; min-height: 100dvh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 18px; text-align: center;
+      padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+    }
+    .code-screen h1 { font-size: 1.5rem; margin: 6px 0 0; }
+    .code-screen .lead { color: var(--dim); max-width: 340px; margin: 0; }
+    .code-input {
+      width: 100%; max-width: 320px; font: 700 1.5rem var(--mono);
+      letter-spacing: .28em; text-align: center; text-transform: uppercase;
+      padding: 16px; border-radius: 14px;
+      background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    }
+    .code-input:focus { outline: none; border-color: var(--c); box-shadow: 0 0 22px rgba(0,234,255,.3); }
+    .code-screen .btn { width: 100%; max-width: 320px; min-height: 52px; }
+    .code-err { color: var(--m); font-size: .9rem; min-height: 1.2em; }
+
+    .chat-screen { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+    .chat-top {
+      display: flex; align-items: center; gap: 10px;
+      padding: max(12px, env(safe-area-inset-top)) 16px 12px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(5,6,10,.7); backdrop-filter: blur(14px);
+      position: sticky; top: 0; z-index: 5;
+    }
+    .room-label { color: var(--dim); font-size: .9rem; }
+    .room-label b { color: var(--text); font-family: var(--mono); letter-spacing: .12em; }
+    .conn { margin-left: auto; font: 700 .72rem var(--mono); letter-spacing: .08em; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--dim); }
+    .conn[data-state="online"]  { color: var(--c); border-color: rgba(0,234,255,.4); }
+    .conn[data-state="offline"] { color: var(--m); border-color: rgba(255,59,224,.4); }
+
+    .messages { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 14px 14px 8px; display: flex; flex-direction: column; gap: 12px; }
+    .empty-hint { color: var(--dim); text-align: center; margin: auto; font-size: .95rem; padding: 0 24px; }
+    .msg { max-width: 90%; padding: 12px 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); }
+    .msg.mine { align-self: flex-end; border-color: rgba(0,234,255,.35); box-shadow: 0 0 18px rgba(0,234,255,.10); }
+    .msg-meta { font: 700 .68rem var(--mono); color: var(--dim); letter-spacing: .06em; margin-bottom: 6px; }
+    .msg-text { color: var(--text); white-space: pre-wrap; word-break: break-word; }
+    .msg-copy {
+      margin-top: 10px; min-height: 44px; width: 100%; border-radius: 10px; cursor: pointer; font-weight: 700;
+      color: #04121a; background: linear-gradient(135deg, var(--c), var(--m)); border: none; font-size: .95rem;
+    }
+    .msg-copy.copied { background: var(--c); }
+
+    .composer {
+      display: flex; gap: 10px; align-items: flex-end;
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--border); background: rgba(5,6,10,.85); backdrop-filter: blur(14px);
+    }
+    .composer-input {
+      flex: 1; resize: none; max-height: 120px; min-height: 48px;
+      padding: 12px 14px; border-radius: 12px;
+      background: var(--surface); border: 1px solid var(--border); color: var(--text); font: 1rem var(--font);
+    }
+    .composer-input:focus { outline: none; border-color: var(--c); }
+    .composer-send { min-height: 48px; padding: 0 18px; }
+  </style>
+</head>
+<body class="screen-code">
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-orb orb-1" aria-hidden="true"></div>
+  <div class="bg-orb orb-2" aria-hidden="true"></div>
+
+  <section id="code-screen" class="code-screen">
+    <div class="brand"><span class="brand-mark"></span><span>ORBIT<span class="brand-dim">REMOTE</span></span></div>
+    <h1>Мост буфера обмена</h1>
+    <p class="lead">Введи код, который показывает программа на компьютере. Текст с ПК будет приходить сюда — жми «Копировать», и он окажется в буфере телефона.</p>
+    <input id="room-input" class="code-input" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="КОД" maxlength="32" />
+    <div id="code-err" class="code-err"></div>
+    <button id="join-btn" class="btn btn-neon"><span>Подключиться</span></button>
+  </section>
+
+  <section id="chat-screen" class="chat-screen">
+    <header class="chat-top">
+      <span class="brand-mark"></span>
+      <span class="room-label">Комната <b id="room-name"></b></span>
+      <span id="conn" class="conn" data-state="connecting">Подключение…</span>
+    </header>
+    <div id="messages" class="messages">
+      <div class="empty-hint" id="empty-hint">Пока нет сообщений. Отправь текст с компьютера — он появится здесь.</div>
+    </div>
+    <form id="send-form" class="composer">
+      <textarea id="send-input" class="composer-input" rows="1" placeholder="Сообщение…"></textarea>
+      <button class="btn btn-neon composer-send" type="submit">Отпр.</button>
+    </form>
+  </section>
+
+  <script>
+    "use strict";
+    var WS_URL = "wss://orbit-remote-signaling-production.up.railway.app/ws";
+    var MY_NAME = "Телефон";
+    var ROOM_RE = /^[A-Za-z0-9]{4,32}$/;
+
+    var currentRoom = null;
+    var ws = null;
+    var reconnectDelay = 1000;
+    var reconnectTimer = null;
+    var manualClose = false;
+    var seen = new Set();
+
+    var el = function (id) { return document.getElementById(id); };
+
+    function setConnState(state) {
+      var c = el("conn");
+      c.dataset.state = state;
+      c.textContent = state === "online" ? "На связи" : state === "offline" ? "Нет связи" : "Подключение…";
+    }
+
+    function fmtTime(ts) {
+      var d = ts ? new Date(ts) : new Date();
+      try { return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); } catch (e) { return ""; }
+    }
+
+    function copyToClipboard(text, btn) {
+      var done = function (ok) {
+        if (!btn) return;
+        var prev = btn.dataset.label || btn.textContent;
+        btn.dataset.label = prev;
+        btn.textContent = ok ? "Скопировано ✓" : "Ошибка";
+        btn.classList.toggle("copied", ok);
+        setTimeout(function () { btn.textContent = prev; btn.classList.remove("copied"); }, 1500);
+      };
+      // Fallback path (runs synchronously inside the tap for old WebView / iOS)
+      var fallback = function () {
+        try {
+          var ta = document.createElement("textarea");
+          ta.value = text; ta.setAttribute("readonly", "");
+          ta.style.cssText = "position:fixed;top:0;left:0;opacity:0;";
+          document.body.appendChild(ta);
+          var isIOS = /iP(ad|hone|od)/.test(navigator.userAgent);
+          if (isIOS) {
+            var range = document.createRange();
+            range.selectNodeContents(ta);
+            var sel = window.getSelection();
+            sel.removeAllRanges(); sel.addRange(range);
+            ta.setSelectionRange(0, text.length);
+          } else { ta.select(); }
+          var ok = document.execCommand("copy");
+          document.body.removeChild(ta);
+          done(ok);
+        } catch (e) { done(false); }
+      };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(function () { done(true); }, fallback);
+      } else { fallback(); }
+    }
+
+    function renderMessage(m) {
+      if (!m || !m.id || seen.has(m.id)) return;
+      seen.add(m.id);
+      var hint = el("empty-hint"); if (hint) hint.remove();
+
+      var list = el("messages");
+      var nearBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 120;
+
+      var mine = m.from === MY_NAME;
+      var wrap = document.createElement("div");
+      wrap.className = "msg" + (mine ? " mine" : "");
+
+      var meta = document.createElement("div");
+      meta.className = "msg-meta";
+      meta.textContent = (m.from || "—") + " · " + fmtTime(m.ts);
+
+      var body = document.createElement("div");
+      body.className = "msg-text";
+      body.textContent = m.text || "";
+
+      var copy = document.createElement("button");
+      copy.className = "msg-copy"; copy.type = "button";
+      copy.textContent = "Копировать";
+      copy.addEventListener("click", function () { copyToClipboard(m.text || "", copy); });
+
+      wrap.appendChild(meta); wrap.appendChild(body); wrap.appendChild(copy);
+      list.appendChild(wrap);
+      if (nearBottom || mine) list.scrollTop = list.scrollHeight;
+    }
+
+    function connect() {
+      setConnState("connecting");
+      ws = new WebSocket(WS_URL);
+      ws.addEventListener("open", function () {
+        reconnectDelay = 1000;
+        setConnState("online");
+        ws.send(JSON.stringify({ type: "chat-join", room: currentRoom }));
+      });
+      ws.addEventListener("message", function (ev) {
+        var msg; try { msg = JSON.parse(ev.data); } catch (e) { return; }
+        if (msg.type === "chat-history" && msg.room === currentRoom) {
+          (msg.messages || []).forEach(renderMessage);
+        } else if (msg.type === "chat-msg" && msg.room === currentRoom) {
+          renderMessage(msg.message);
+        }
+      });
+      ws.addEventListener("close", function () {
+        setConnState("offline");
+        if (!manualClose) scheduleReconnect();
+      });
+      ws.addEventListener("error", function () { try { ws.close(); } catch (e) {} });
+    }
+
+    function scheduleReconnect() {
+      clearTimeout(reconnectTimer);
+      var jitter = Math.random() * 400;
+      reconnectTimer = setTimeout(function () {
+        reconnectDelay = Math.min(reconnectDelay * 2, 30000);
+        connect();
+      }, reconnectDelay + jitter);
+    }
+
+    function sendMessage(text) {
+      text = (text || "").replace(/\s+$/, "");
+      if (!text || !ws || ws.readyState !== WebSocket.OPEN) return;
+      ws.send(JSON.stringify({ type: "chat-send", room: currentRoom, text: text, from: MY_NAME }));
+    }
+
+    function joinRoom(room) {
+      currentRoom = room;
+      el("room-name").textContent = room;
+      document.body.className = "screen-chat";
+      manualClose = false;
+      connect();
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      var input = el("room-input");
+      var err = el("code-err");
+      var tryJoin = function () {
+        var room = (input.value || "").trim().toUpperCase();
+        if (!ROOM_RE.test(room)) { err.textContent = "Код: 4–32 буквы/цифры."; return; }
+        err.textContent = "";
+        joinRoom(room);
+      };
+      el("join-btn").addEventListener("click", tryJoin);
+      input.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); tryJoin(); } });
+
+      var sendInput = el("send-input");
+      el("send-form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        sendMessage(sendInput.value);
+        sendInput.value = "";
+        sendInput.style.height = "auto";
+        sendInput.focus();
+      });
+      sendInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); el("send-form").requestSubmit(); }
+      });
+      sendInput.addEventListener("input", function () {
+        sendInput.style.height = "auto";
+        sendInput.style.height = Math.min(sendInput.scrollHeight, 120) + "px";
+      });
+
+      document.addEventListener("visibilitychange", function () {
+        if (!document.hidden && ws && ws.readyState > 1) { reconnectDelay = 1000; scheduleReconnect(); }
+      });
+
+      // Prefill ?room=CODE if present
+      var params = new URLSearchParams(location.search);
+      var pre = (params.get("room") || "").trim().toUpperCase();
+      if (ROOM_RE.test(pre)) { input.value = pre; joinRoom(pre); }
+    });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("/sw.js").catch(function () {});
+      });
+    }
+  </script>
+</body>
+</html>
