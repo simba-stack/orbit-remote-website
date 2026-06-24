@@ -36,7 +36,7 @@ app.use(
         scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", "data:"],
-        connectSrc: ["'self'", "wss://orbit-remote-signaling-production.up.railway.app"],
+        connectSrc: ["'self'", "wss://v3169940.hosted-by-vdsina.ru"],
         fontSrc: ["'self'", "data:"],
         objectSrc: ["'none'"],
         baseUri: ["'self'"],
